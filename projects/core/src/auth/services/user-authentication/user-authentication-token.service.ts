@@ -34,7 +34,9 @@ export class UserAuthenticationTokenService {
     protected oAuthService: OAuthService,
     protected occEndpointsService?: OccEndpointsService
   ) {
-    this.prepareOauthLogin();
+    if(!this.config.authentication.manuallyMode) {
+      this.prepareOauthLogin();
+    }
   }
 
   async prepareOauthLogin() {
