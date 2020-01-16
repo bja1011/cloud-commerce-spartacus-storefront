@@ -4,6 +4,7 @@ export const defaultAuthConfig: AuthConfig = {
   authentication: {
     client_id: 'mobile_android',
     client_secret: 'secret',
+    manuallyMode: false,
   },
   backend: {
     occ: {

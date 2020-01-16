@@ -7,12 +7,14 @@ import { defaultAuthConfig } from './config/default-auth-config';
 import { interceptors } from './http-interceptors/index';
 import { AuthServices } from './services/index';
 import { AuthStoreModule } from './store/auth-store.module';
+import { OAuthModule } from "angular-oauth2-oidc";
 
 @NgModule({
   imports: [
     CommonModule,
     HttpClientModule,
     AuthStoreModule,
+    OAuthModule.forRoot(),
     ConfigModule.withConfig(defaultAuthConfig),
   ],
 })
