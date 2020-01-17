@@ -34,7 +34,7 @@ export class UserAuthenticationTokenService {
     protected oAuthService: OAuthService,
     protected occEndpointsService?: OccEndpointsService
   ) {
-    if(!this.config.authentication.manuallyMode) {
+    if (!this.config.authentication.manuallyMode) {
       this.prepareOauthLogin();
     }
   }
@@ -96,6 +96,18 @@ export class UserAuthenticationTokenService {
   }
 
   revoke(userToken: UserToken): Observable<{}> {
+    return this.config.authentication.manuallyMode ? this.revokeManually(userToken) : this.logoutAndRevoke(userToken);
+  }
+
+  /**
+   * Logout locally, then revoke token with REST.
+   */
+  logoutAndRevoke(userToken: UserToken): Observable<{}> {
+    this.oAuthService.logOut();
+    return this.revokeManually(userToken);
+  }
+
+  revokeManually(userToken: UserToken): Observable<{}> {
     const url = this.occEndpointsService.getRawEndpoint('revoke');
     const headers = InterceptorUtil.createHeader(
       TOKEN_REVOCATION_HEADER,
@@ -107,7 +119,7 @@ export class UserAuthenticationTokenService {
     );
     const params = new HttpParams().set('token', userToken.access_token);
     return this.http
-      .post<{}>(url, params, { headers })
+      .post<{}>(url, params, {headers})
       .pipe(catchError((error: any) => throwError(error)));
   }
 }
