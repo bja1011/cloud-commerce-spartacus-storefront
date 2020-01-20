@@ -11,7 +11,6 @@ import { AuthConfig } from '../../config/auth-config';
 import { UserToken } from '../../models/token-types.model';
 import { fromPromise } from "rxjs/internal-compatibility";
 import { OAuthService } from "angular-oauth2-oidc";
-import { oauthConfig } from "../../config/oauth-config";
 
 @Injectable()
 export class UserAuthenticationTokenService {
@@ -35,19 +34,20 @@ export class UserAuthenticationTokenService {
     protected occEndpointsService?: OccEndpointsService
   ) {
     if (!this.config.authentication.manuallyMode) {
-      this.prepareOauthLogin();
+      this.prepareOauthLogin();//.then(()=>this.oAuthService.initImplicitFlow());
     }
   }
 
   async prepareOauthLogin() {
-    this.oAuthService.configure(oauthConfig);
+    this.oAuthService.configure(this.config.authentication.oAuthConfig);
     this.oAuthService.setStorage(sessionStorage);
     return await this.oAuthService.loadDiscoveryDocument();
   }
 
   loadToken(userId: string, password: string): Observable<UserToken> {
     return this.config.authentication.manuallyMode ?
-      this.loadTokenManually(userId, password) : this.loadTokenWithLib(userId, password);
+      this.loadTokenManually(userId, password) :
+      this.loadTokenWithLib(userId, password);
   }
 
   loadTokenWithLib(userId: string, password: string): Observable<UserToken> {
@@ -119,7 +119,7 @@ export class UserAuthenticationTokenService {
     );
     const params = new HttpParams().set('token', userToken.access_token);
     return this.http
-      .post<{}>(url, params, {headers})
+      .post<{}>(url, params, { headers })
       .pipe(catchError((error: any) => throwError(error)));
   }
 }

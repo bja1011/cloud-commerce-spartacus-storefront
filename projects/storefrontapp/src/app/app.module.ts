@@ -9,7 +9,7 @@ import {
 } from '@angular/platform-browser';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { translationChunksConfig, translations } from '@spartacus/assets';
-import { ConfigModule, TestConfigModule } from '@spartacus/core';
+import { AuthConfig, ConfigModule, TestConfigModule } from '@spartacus/core';
 import {
   B2cStorefrontModule,
   JsonLdBuilderModule,
@@ -76,6 +76,19 @@ if (!environment.production) {
 
     ...devImports,
     ConfigModule,
+
+    // Auth config with OAuth example
+    ConfigModule.withConfig({
+      authentication: {
+        oAuthConfig: {
+          timeoutFactor: 0.00001,
+          strictDiscoveryDocumentValidation: false,
+          skipIssuerCheck: true,
+          issuer: 'https://storefront.c39j2-walkersde1-d4-public.model-t.cc.commerce.ondemand.com/authorizationserver',
+        },
+        // manuallyMode: true, // true value will skip oauth and fallback to manual login flow
+      },
+    } as AuthConfig)
   ],
 
   bootstrap: [StorefrontComponent],
